@@ -15,8 +15,6 @@
 #ifndef __CAMERA_H
 #define __CAMERA_H
 
-#include <stddef.h>
-#include <stdlib.h>
 #include "vector.h"
 
 typedef enum {
@@ -33,23 +31,18 @@ typedef struct {
     void *params;
 } Camera;
 
-static inline Camera *createCamera() {
-    Camera *camera = malloc(sizeof(Camera));
-    camera->pos = ZERO;
-    camera->direction = EZ;
-    camera->up = EY;
-    camera->params = NULL;
-    return camera;
-}
+typedef struct {
+    float scale;
+} OrthoCameraParams;
 
-static inline Camera *createOrthoCamera(double scale) {
-    Camera *camera = createCamera();
-    return camera;
-}
+typedef struct {
+    float focalLength;
+} PerspectiveCameraParams;
 
-static inline void releaseCamera(Camera *camera) {
-    free(camera->params);
-    free(camera);
-}
+Camera *createCamera();
+Camera *createOrthoCamera(float scale);
+Camera *createPerspectiveCamera(float fovDegrees);
+void setCameraFOV(Camera *camera, float fovDegrees);
+void freeCamera(Camera *camera);
 
 #endif
