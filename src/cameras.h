@@ -1,5 +1,5 @@
 /*
- * Cameras map image-plane coordinates to rays.
+ * Cameras map image-plane coordinates to Rays.
  * The image plane coordinate system:
  *  
  *            (0, 1)
@@ -25,9 +25,9 @@ typedef enum {
 /* `direction` and `up` form an orthonormal basis */
 typedef struct {
     CameraType type;
-    vec3 pos;
-    vec3 direction;
-    vec3 up;
+    Vec3 pos;
+    Vec3 direction;
+    Vec3 up;
     void *params;
 } Camera;
 
@@ -39,7 +39,6 @@ typedef struct {
     float focalLength;
 } PerspectiveCameraParams;
 
-Camera *createCamera();
 Camera *createOrthoCamera(float scale);
 Camera *createPerspectiveCamera(float fovDegrees);
 void setCameraFOV(Camera *camera, float fovDegrees);
