@@ -1,4 +1,4 @@
-// Code for manipulating 3D vectors and Rays
+// simple vectors/rays implementation
 
 #ifndef __VECTOR_H
 #define __VECTOR_H

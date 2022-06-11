@@ -2,60 +2,47 @@
 #include <assert.h>
 #include <stdlib.h>
 
-Camera *createCamera() {
-    Camera *camera = malloc(sizeof(Camera));
+void initCamera(Camera *camera) {
     camera->pos = ZERO;
     camera->direction = EZ;
     camera->up = EY;
-    camera->params = NULL;
+}
+
+OrthoCamera *createOrthoCamera(float scale) {
+    OrthoCamera *camera = malloc(sizeof(OrthoCamera));
+    initCamera((Camera *)camera);
+    camera->camera.type = ORTHO_CAMERA;
+    camera->scale = scale;
     return camera;
 }
 
-Camera *createOrthoCamera(float scale) {
-    Camera *camera = createCamera();
-    OrthoCameraParams *params = malloc(sizeof(OrthoCameraParams));
-    camera->type = ORTHO_CAMERA;
-    camera->params = params;
-    params->scale = scale;
-    return camera;
-}
-
-Camera *createPerspectiveCamera(float fovDegrees) {
-    Camera *camera = createCamera();
-    PerspectiveCameraParams *params = malloc(sizeof(PerspectiveCameraParams));
-    camera->type = PERSPECTIVE_CAMERA;
-    camera->params = params;
+PerspectiveCamera *createPerspectiveCamera(float fovDegrees) {
+    PerspectiveCamera *camera = malloc(sizeof(PerspectiveCamera));
+    initCamera((Camera *)camera);
+    camera->camera.type = PERSPECTIVE_CAMERA;
     setCameraFOV(camera, fovDegrees);
     return camera;
 }
 
-void setCameraFOV(Camera *camera, float fovDegrees) {
-    assert(camera != NULL);
-    assert(camera->type == PERSPECTIVE_CAMERA);
-    ((PerspectiveCameraParams *)camera->params)->focalLength = 1 / tanf(fovDegrees / 2);
-}
-
-void freeCamera(Camera *camera) {
-    assert(camera != NULL);
-    free(camera->params);
-    free(camera);
+void setCameraFOV(PerspectiveCamera *camera, float fovDegrees) {
+    camera->focalLength = 1 / tanf(fovDegrees / 2);
 }
 
 // The <camera>GetRay functions return Rays in the coordinate space defined by the basis vectors in Camera
 // The transformation to world space is performed in getCameraRay
 
-Ray orthoCameraGetRay(Camera *camera, float ix, float iy) {
-    float scale = ((OrthoCameraParams *)camera->params)->scale;
+Ray orthoCameraGetRay(OrthoCamera *camera, float ix, float iy) {
+    float scale = camera->scale;
     return (Ray) {
         (Vec3) {ix * scale, iy * scale, 0},
         EZ
     };
 }
 
-Ray perspectiveCameraGetRay(Camera *camera, float ix, float iy) {
+Ray perspectiveCameraGetRay(PerspectiveCamera *camera, float ix, float iy) {
     return (Ray) {
-        (Vec3) {0, 0, 0},
-        normalize((Vec3) {ix, iy, ((PerspectiveCameraParams *)camera->params)->focalLength})  
+        ZERO,
+        normalize((Vec3) {ix, iy, camera->focalLength})  
     };
 }
 
@@ -64,10 +51,10 @@ Ray getCameraRay(Camera *camera, float ix, float iy) {
     Ray cameraRay;
     switch(camera->type) {
         case ORTHO_CAMERA:
-            cameraRay = orthoCameraGetRay(camera, ix, iy);
+            cameraRay = orthoCameraGetRay((OrthoCamera *)camera, ix, iy);
             break;
         case PERSPECTIVE_CAMERA:
-            cameraRay = perspectiveCameraGetRay(camera, ix, iy);
+            cameraRay = perspectiveCameraGetRay((PerspectiveCamera *)camera, ix, iy);
             break;
         // FIXME: No error handling on default case
     }
