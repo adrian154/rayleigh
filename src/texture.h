@@ -3,12 +3,12 @@
 #ifndef __TEXTURE_H
 #define __TEXTURE_H
 
-#include "vector.h"
+#include <vector.h>
 
 typedef enum {
-    CONSTANT,
-    IMAGE,
-    BLEND
+    CONSTANT_TEXTURE,
+    IMAGE_TEXTURE,
+    BLEND_TEXTURE
 } TextureType;
 
 typedef struct {
@@ -18,12 +18,19 @@ typedef struct {
 
 typedef struct {
     TextureType type;
-
+    int width;
+    int height;
+    int channels;
+    unsigned char *data;
 } ImageTexture;
 
 typedef struct {
     TextureType type;
     void *A, *B, *factor;
 } BlendTexture;
+
+ConstantTexture *makeConstTexture(Vec3 value);
+ImageTexture *loadTexture(const char *filename);
+Vec3 sampleTexture(void *texture, float u, float v);
 
 #endif

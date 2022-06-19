@@ -15,7 +15,7 @@
 #ifndef __CAMERA_H
 #define __CAMERA_H
 
-#include "vector.h"
+#include <vector.h>
 
 // TODO: add environment camera which outputs a spheremap
 typedef enum {
