@@ -1,3 +1,3 @@
-# LittleRender
+# Rayleigh
 
-LittleRender is a small physically-based renderer written in C.
+Rayleigh is a small physically-based renderer written in C.
